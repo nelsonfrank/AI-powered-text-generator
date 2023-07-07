@@ -8,15 +8,13 @@ import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import LogoImage from "../../../../public/assets/distributed-logo.svg";
+import AppLogo from "@/components/app-logo";
 
 const formSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }),
@@ -40,12 +38,8 @@ const Signin = () => {
 	return (
 		<div className='flex flex-col relative mt-40 items-center min-h-screen'>
 			<div className='w-full  px-4 sm:w-3/4 md:w-1/2 md:mx-auto 2xl:w-1/4'>
-				<div className='flex gap-4 mb-8'>
-					<Image src={LogoImage} alt='logo' />
-					<div>
-						<p className='text-primary'>Elastic Team </p>
-						<p className='text-lg font-semibold'>Open AI - Text Generator</p>
-					</div>
+				<div className='mb-8'>
+					<AppLogo />
 				</div>
 				<div className='mb-8'>
 					<p className='font-bold leading-7 text-xl'>
