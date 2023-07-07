@@ -22,6 +22,7 @@ module.exports = {
 				ring: "hsl(var(--ring))",
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
+				black: "hsl(var(--black))",
 				primary: {
 					DEFAULT: "hsl(var(--primary))",
 					foreground: "hsl(var(--primary-foreground))",
@@ -72,6 +73,7 @@ module.exports = {
 			},
 			fontFamily: {
 				poppins: ["var(--font-poppins)"],
+				inter: ["var(--font-inter)"],
 			},
 		},
 	},

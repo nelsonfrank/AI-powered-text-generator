@@ -26,7 +26,7 @@ const ChatInput = () => {
 	};
 
     return (
-			<div className='absolute bottom-2 left-0 right-0 px-2 '>
+			<div className='fixed bottom-0 left-0 right-0 px-2 bg-white'>
 				<div className=' input-container'>
 					<Input
 						placeholder='Type your prompt heres'

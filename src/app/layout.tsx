@@ -1,10 +1,5 @@
 import './globals.css'
-import { Poppins } from "next/font/google";
-
-const poppins = Poppins({
-	subsets: ["latin"],
-	weight: "400",
-});
+import { poppins, inter } from "./fonts";
 
 export const metadata = {
 	title: "OpenAI Text Generator App",
@@ -16,12 +11,11 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<html lang='en'>
-			<body
-				className={`${poppins.className} max-w-full mx-auto relative h-screen`}
-			>
-				{children}
-			</body>
+		<html
+			lang='en'
+			className={`${poppins.variable} ${inter.variable} font-poppins`}
+		>
+			<body className='max-w-full mx-auto relative h-screen'>{children}</body>
 		</html>
 	);
 }

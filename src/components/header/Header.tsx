@@ -3,14 +3,17 @@ import { SignOutIcon } from "../icons";
 
 const Header = () => {
 	return (
-		<div className='py-4'>
-			<div className='flex justify-between items-center w-11/12 mx-auto '>
-				<div>
-					<AppLogo />
+		<div>
+			<div className=' fixed top-0 left-0 right-0 bg-white z-20'>
+				<div className='flex justify-between items-center w-11/12 mx-auto py-4'>
+					<div>
+						<AppLogo />
+					</div>
+					<div>
+						<SignOutIcon />
+					</div>
 				</div>
-				<div>
-					<SignOutIcon />
-				</div>
+				<div className='h-1 w-full mb-4 border-b-2 bg-white'></div>
 			</div>
 		</div>
 	);
