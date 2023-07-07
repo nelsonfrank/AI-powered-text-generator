@@ -25,21 +25,21 @@ const ChatInput = () => {
 		setPromt(e.target.value);
 	};
 
-	return (
-		<div className='fixed bottom-2 left-0 right-0 px-2 '>
-			<div className=' input-container'>
-				<Input
-					placeholder='Type your prompt heres'
-					value={prompt}
-					onChange={handleInputChange}
-					onKeyUp={handleKeyPress}
-				/>
-				<button onClick={handleSubmit}>
-					<Send />
-				</button>
+    return (
+			<div className='absolute bottom-2 left-0 right-0 px-2 '>
+				<div className=' input-container'>
+					<Input
+						placeholder='Type your prompt heres'
+						value={prompt}
+						onChange={handleInputChange}
+						onKeyUp={handleKeyPress}
+					/>
+					<button onClick={handleSubmit}>
+						<Send />
+					</button>
+				</div>
 			</div>
-		</div>
-	);
+		);
 };
 
 export default ChatInput;
