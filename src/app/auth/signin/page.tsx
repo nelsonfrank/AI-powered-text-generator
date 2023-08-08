@@ -2,6 +2,7 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
 
 // Components
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import AppLogo from "@/components/app-logo";
+import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const formSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }),
@@ -24,6 +27,14 @@ const formSchema = z.object({
 });
 
 const Signin = () => {
+	const router = useRouter();
+
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | undefined>();
+
+	const searchParams = useSearchParams();
+	const callbackUrl = searchParams.get("callbackUrl") || "/";
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -32,8 +43,30 @@ const Signin = () => {
 		},
 	});
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
+	async function onSubmit(values: z.infer<typeof formSchema>) {
 		console.log(values);
+		try {
+			setLoading(true);
+
+			const res = await signIn("credentials", {
+				redirect: false,
+				email: values.email,
+				password: values.password,
+				callbackUrl,
+			});
+
+			setLoading(false);
+
+			console.log(res);
+			if (!res?.error) {
+				router.push(callbackUrl);
+			} else {
+				setError("invalid email or password");
+			}
+		} catch (error: any) {
+			setLoading(false);
+			setError(error);
+		}
 	}
 	return (
 		<div className='flex flex-col relative mt-40 items-center min-h-screen'>
