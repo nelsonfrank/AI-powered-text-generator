@@ -44,7 +44,6 @@ const Signin = () => {
 	});
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
 		try {
 			setLoading(true);
 
@@ -57,15 +56,14 @@ const Signin = () => {
 
 			setLoading(false);
 
-			console.log(res);
 			if (!res?.error) {
 				router.push(callbackUrl);
 			} else {
-				setError("invalid email or password");
+				setError("Invalid email or password");
 			}
 		} catch (error: any) {
 			setLoading(false);
-			setError(error);
+			setError("Invalid email or password");
 		}
 	}
 	return (
@@ -79,6 +77,13 @@ const Signin = () => {
 						Please log in to continue
 					</p>
 				</div>
+				{error && (
+					<div className='mb-4'>
+						<p className='text-red-500 py-3 px-3 bg-red-200 rounded-sm'>
+							{error}
+						</p>
+					</div>
+				)}
 				<div className=''>
 					<Form {...form}>
 						<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>

@@ -27,7 +27,6 @@ function dummyAPICall(delay: number): Promise<any[]> {
 export const getMessagesByUserIdAsync = createAsyncThunk(
     "messages/getMessagesByUserAsync",
     async (userId: string, thunkAPI) => {
-        console.log(userId)
         try {
             const response = await dummyAPICall(2000)
 
@@ -49,7 +48,6 @@ export const sendMessageAsync = createAsyncThunk(
         try {
             const response = await Axios.post("/api/messages", payload)
 
-            console.log(response)
             return response;
         } catch (error) {
 
