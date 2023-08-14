@@ -11,7 +11,7 @@ export default function Home() {
 
 	const { data: session, status } = useSession();
 
-	if (!session) {
+	if (!session && typeof window !== "undefined") {
 		router.push("/auth/signin");
 		return null;
 	}

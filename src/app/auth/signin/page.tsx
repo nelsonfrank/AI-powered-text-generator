@@ -70,7 +70,7 @@ const Signin = () => {
 		}
 	}
 
-	if (session) {
+	if (!session && typeof window !== "undefined") {
 		router.push("/");
 		return null;
 	}
