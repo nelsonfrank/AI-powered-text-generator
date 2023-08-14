@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import AppLogo from "@/components/app-logo";
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession, getSession } from "next-auth/react";
 
 const formSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }),
@@ -34,6 +35,8 @@ const Signin = () => {
 
 	const searchParams = useSearchParams();
 	const callbackUrl = searchParams.get("callbackUrl") || "/";
+
+	const { data: session } = useSession();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -66,6 +69,12 @@ const Signin = () => {
 			setError("Invalid email or password");
 		}
 	}
+
+	if (session) {
+		router.push("/");
+		return null;
+	}
+
 	return (
 		<div className='flex flex-col relative mt-40 items-center min-h-screen'>
 			<div className='w-full  px-4 sm:w-3/4 md:w-1/2 md:mx-auto 2xl:w-1/4'>

@@ -71,7 +71,6 @@ const ChatInput = () => {
 		setPromt(e.target.value);
 	};
 
-	console.log(response);
 	return (
 		<div>
 			{response}
