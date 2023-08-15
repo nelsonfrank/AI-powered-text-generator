@@ -1,19 +1,15 @@
-"use client";
 import ChatInput from "@/components/chat-input";
 import Chats from "@/components/chats";
 import Header from "@/components/header";
-import { useSession, getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-	const router = useRouter();
+async function Home() {
+	const session = await getServerSession(authOptions);
 
-	const { data: session, status } = useSession();
-
-	if (!session && typeof window !== "undefined") {
-		router.push("/auth/signin");
-		return null;
+	if (!session) {
+		redirect("/auth/signin");
 	}
 
 	return (
@@ -24,3 +20,5 @@ export default function Home() {
 		</main>
 	);
 }
+
+export default Home;

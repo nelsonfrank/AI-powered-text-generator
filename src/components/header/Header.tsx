@@ -1,3 +1,4 @@
+"use client";
 import AppLogo from "../app-logo/app-logo";
 import { SignOutIcon } from "../icons";
 import { signOut } from "next-auth/react";

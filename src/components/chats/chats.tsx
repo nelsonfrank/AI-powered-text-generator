@@ -1,3 +1,4 @@
+"use client";
 import { RootState } from "@/store";
 import ChatMessage from "./chat-message";
 import { useSelector } from "react-redux";
