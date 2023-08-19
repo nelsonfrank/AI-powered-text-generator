@@ -6,7 +6,7 @@ import Axios from "axios";
 
 export interface MessagesState {
     isLoading: boolean;
-    messages: Message[];
+    messages: any[];
     error?: string
 }
 
@@ -41,14 +41,68 @@ export const getMessagesByUserIdAsync = createAsyncThunk(
 
 export const sendMessageAsync = createAsyncThunk(
     "messages/sendMessageAsync",
-    async (payload: {
-        author: string,
-        content: string
-    }, thunkAPI) => {
+    async (payload: Message, thunkAPI) => {
         try {
-            const response = await Axios.post("/api/messages", payload)
+            console.log(payload)
+            const response = await Axios.post("/api/prompt", payload)
 
-            return response;
+            if (!response.data) {
+                throw new Error(response.statusText);
+            }
+
+            const data = response.data;
+            if (!data) {
+                return;
+            }
+
+            thunkAPI.dispatch(getMessageResponseAsync({
+                senderId: payload.senderId,
+                receiverId: payload.receiverId,
+                content: payload.content
+            }))
+
+            return {
+                sent: data,
+            };
+        } catch (error) {
+
+            return thunkAPI.rejectWithValue("Fail to send message");
+        }
+
+    }
+);
+
+export const getMessageResponseAsync = createAsyncThunk(
+    "messages/getMessageResponseAsync",
+    async (payload: Message, thunkAPI) => {
+        try {
+            const response = await Axios.post("/api/ai-response", payload)
+
+            if (!response.data) {
+                throw new Error(response.statusText);
+            }
+
+            // This data is a ReadableStream
+            const data = response.data;
+            if (!data) {
+                return;
+            }
+
+            const dbResponse = await Axios.post("/api/prompt", {
+                receiverId: payload.senderId,
+                senderId: payload.receiverId,
+                content: data,
+            })
+
+            if (!dbResponse.data) {
+                throw new Error(response.statusText);
+            }
+
+            const newMessage = dbResponse.data
+            return {
+                response: newMessage
+
+            };
         } catch (error) {
 
             return thunkAPI.rejectWithValue("Fail to send message");
@@ -61,7 +115,9 @@ const messagesSlice = createSlice({
     name: "messages",
     initialState,
     reducers: {
-
+        sendMessage(state, action) {
+            state.messages = [...state.messages, action.payload]
+        }
     },
     extraReducers(builder) {
         builder
@@ -81,12 +137,31 @@ const messagesSlice = createSlice({
             })
             .addCase(sendMessageAsync.fulfilled, (state, action) => {
                 state.isLoading = false;
+                if (action.payload) {
+                    state.messages = [...state.messages, action.payload]
+                }
             })
             .addCase(sendMessageAsync.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message;
+            })
+            .addCase(getMessageResponseAsync.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getMessageResponseAsync.fulfilled, (state, action) => {
+                console.log(action.payload)
+                state.isLoading = false;
+                if (action.payload) {
+                    state.messages = [...state.messages, action.payload]
+                }
+            })
+            .addCase(getMessageResponseAsync.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.error.message;
             })
     },
 });
 
+const { sendMessage } = messagesSlice.actions
+export { sendMessage }
 export default messagesSlice.reducer;

@@ -6,6 +6,7 @@ import { Send } from "@/components/icons/icons";
 import { Input } from "@/components/ui/input";
 import { AppDispatch } from "@/store";
 import { sendMessageAsync } from "@/store/features/messagesSlice";
+import { useSession } from "next-auth/react";
 
 const ChatInput = () => {
 	const [prompt, setPromt] = useState("");
@@ -13,6 +14,10 @@ const ChatInput = () => {
 	const [input, setInput] = useState("");
 	const [response, setResponse] = useState<String>("");
 	const dispatch = useDispatch<AppDispatch>();
+
+	const { data: session } = useSession();
+
+	const user = session?.user;
 
 	const handleKeyPress = (e: any) => {
 		if (e.key === "Enter") {
@@ -62,9 +67,17 @@ const ChatInput = () => {
 	};
 	const handleSubmit = (e: any) => {
 		e.preventDefault();
-		const message = `Q: ${prompt} Generate a response with less than 200 characters.`;
 
-		generateResponse(e, message);
+		if (!user) return;
+
+		dispatch(
+			sendMessageAsync({
+				receiverId: "64e0b4809458da2c53c88629",
+				senderId: user.id,
+				content: prompt,
+			})
+		);
+		// generateResponse(e, message);
 		setPromt("");
 	};
 
@@ -74,7 +87,6 @@ const ChatInput = () => {
 
 	return (
 		<div>
-			{response}
 			<div className='fixed bottom-0 left-0 right-0 px-2 bg-white'>
 				<div className=' input-container'>
 					<Input
