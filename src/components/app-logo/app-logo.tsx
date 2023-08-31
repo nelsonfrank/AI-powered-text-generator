@@ -6,7 +6,7 @@ const AppLogo = () => {
 		<div className='flex gap-4'>
 			<Image src={LogoImage} alt='logo' />
 			<div>
-				<p className='text-primary'>Elastic Team </p>
+				<p className='text-primary'>Chat AI </p>
 				<p className='text-lg font-semibold'>Open AI - Text Generator</p>
 			</div>
 		</div>
