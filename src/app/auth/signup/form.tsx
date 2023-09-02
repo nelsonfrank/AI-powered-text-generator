@@ -2,10 +2,10 @@
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { signIn } from "next-auth/react";
+// import { signIn } from "next-auth/react";
 
 // Components
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -21,10 +21,14 @@ import {
 	Card,
 	CardContent,
 	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
 import { Icons } from "@/components/icons/icons";
+// import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }),
@@ -35,6 +39,8 @@ const formSchema = z.object({
 
 const SignupForm = () => {
 	const router = useRouter();
+
+	// const { toast } = useToast();
 
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | undefined>();
@@ -53,7 +59,17 @@ const SignupForm = () => {
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		setLoading(true);
 
-		const res = await fetch(process.env.BASE_URL + "/api/register");
+		const payload = {
+			name: values.email.split("@")[0],
+			...values,
+		};
+		const res = await fetch(process.env.BASE_URL + "/api/register", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json", // Set the appropriate content type
+			},
+			body: JSON.stringify(payload),
+		});
 
 		if (!res.ok) {
 			setLoading(false);
@@ -64,6 +80,13 @@ const SignupForm = () => {
 		const result = await res.json();
 
 		setLoading(false);
+
+		console.log(result);
+
+		// toast({
+		// 	title: "Account Created Successfully",
+		// 	description: "You can now login using your credentials.",
+		// });
 
 		router.push(callbackUrl);
 		setError("");
@@ -164,6 +187,19 @@ const SignupForm = () => {
 							</form>
 						</Form>
 					</CardContent>
+					<CardFooter>
+						Already registered?{" "}
+						<Link
+							href={"/auth/signin"}
+							className={cn(
+								buttonVariants({ variant: "ghost" }),
+								"hover:bg-transparent hover:underline",
+								"justify-start"
+							)}
+						>
+							Login
+						</Link>
+					</CardFooter>
 				</Card>
 			</div>
 		</div>

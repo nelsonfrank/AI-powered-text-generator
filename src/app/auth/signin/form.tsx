@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 
 // Components
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -26,6 +26,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Icons } from "@/components/icons/icons";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const formSchema = z.object({
 	email: z.string().email({ message: "Invalid email address" }),
@@ -171,7 +173,19 @@ const SigninForm = () => {
 							</form>
 						</Form>
 					</CardContent>
-					<CardFooter></CardFooter>
+					<CardFooter>
+						{"Don't have an account? "}
+						<Link
+							href={"/auth/signup"}
+							className={cn(
+								buttonVariants({ variant: "ghost" }),
+								"hover:bg-transparent hover:underline",
+								"justify-start"
+							)}
+						>
+							Register here
+						</Link>
+					</CardFooter>
 				</Card>
 			</div>
 		</div>
