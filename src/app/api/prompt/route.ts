@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     const prompt = (await req.json()) as Message
 
-    console.log(prompt)
     if (!prompt) {
         return new Response("No prompt in the request", { status: 400 });
     }

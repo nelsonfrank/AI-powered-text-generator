@@ -25,46 +25,6 @@ const ChatInput = () => {
 		}
 	};
 
-	const generateResponse = async (
-		e: React.MouseEvent<HTMLButtonElement>,
-		prompt: string
-	) => {
-		e.preventDefault();
-		setResponse("");
-		setLoading(true);
-
-		const response = await fetch("/api/messages", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				prompt,
-			}),
-		});
-
-		if (!response.ok) {
-			throw new Error(response.statusText);
-		}
-
-		// This data is a ReadableStream
-		const data = response.body;
-		if (!data) {
-			return;
-		}
-
-		const reader = data.getReader();
-		const decoder = new TextDecoder();
-		let done = false;
-
-		while (!done) {
-			const { value, done: doneReading } = await reader.read();
-			done = doneReading;
-			const chunkValue = decoder.decode(value);
-			setResponse((prev) => prev + chunkValue);
-		}
-		setLoading(false);
-	};
 	const handleSubmit = (e: any) => {
 		e.preventDefault();
 

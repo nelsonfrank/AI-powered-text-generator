@@ -3,6 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 
 import { Message } from "@/types";
 import Axios from "axios";
+import { ParsedEvent, ReconnectInterval, createParser } from "eventsource-parser";
 
 export interface MessagesState {
     isLoading: boolean;
@@ -43,7 +44,6 @@ export const sendMessageAsync = createAsyncThunk(
     "messages/sendMessageAsync",
     async (payload: Message, thunkAPI) => {
         try {
-            console.log(payload)
             const response = await Axios.post("/api/prompt", payload)
 
             if (!response.data) {
@@ -76,31 +76,44 @@ export const getMessageResponseAsync = createAsyncThunk(
     "messages/getMessageResponseAsync",
     async (payload: Message, thunkAPI) => {
         try {
-            const response = await Axios.post("/api/ai-response", payload)
 
-            if (!response.data) {
+
+            const response = await fetch("/api/ai-response", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            })
+
+            if (!response.ok) {
                 throw new Error(response.statusText);
             }
 
             // This data is a ReadableStream
-            const data = response.data;
+            const data = response.body;
             if (!data) {
                 return;
             }
 
-            const dbResponse = await Axios.post("/api/prompt", {
-                receiverId: payload.senderId,
-                senderId: payload.receiverId,
-                content: data,
-            })
 
-            if (!dbResponse.data) {
-                throw new Error(response.statusText);
-            }
 
-            const newMessage = dbResponse.data
+
+
+            // const dbResponse = await Axios.post("/api/prompt", {
+            //     receiverId: payload.senderId,
+            //     senderId: payload.receiverId,
+            //     content: data,
+            // })
+
+            // if (!dbResponse.data) {
+            //     throw new Error(response.statusText);
+            // }
+
+            // const newMessage = dbResponse.data
+
             return {
-                response: newMessage
+                response: data
 
             };
         } catch (error) {
@@ -149,7 +162,6 @@ const messagesSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(getMessageResponseAsync.fulfilled, (state, action) => {
-                console.log(action.payload)
                 state.isLoading = false;
                 if (action.payload) {
                     state.messages = [...state.messages, action.payload]

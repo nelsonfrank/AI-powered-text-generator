@@ -81,7 +81,6 @@ const SignupForm = () => {
 
 		setLoading(false);
 
-		console.log(result);
 
 		// toast({
 		// 	title: "Account Created Successfully",

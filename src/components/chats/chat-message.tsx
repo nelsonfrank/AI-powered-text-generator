@@ -1,21 +1,53 @@
 import { useSession } from "next-auth/react";
 import ChatAvatar from "./chat-avatar";
 import { getUserInitials } from "@/utils";
+import { useEffect, useState } from "react";
 
 interface ChatMessageProps {
 	position: "left" | "right";
-	message: string;
+	message: string | ReadableStream<Uint8Array>;
 }
 
 const ChatMessage = ({ position, message }: ChatMessageProps) => {
 	const { data: session } = useSession();
+	const [response, setResponse] = useState("");
+
 	const parser = new DOMParser();
+
 	function replaceWithBr() {
-		return message.replace(/\n/g, "<br />");
+		return response?.replace(/\n/g, "<br />");
 	}
 
-	const parsedMessage = parser.parseFromString(message, "text/html").body
-		.textContent;
+	const decodeMessage = async (
+		data: ReadableStream<Uint8Array> | null | string
+	) => {
+		if (!data || typeof data === "string") return;
+		const reader = data.getReader();
+		const decoder = new TextDecoder();
+		let done = false;
+
+		let aiResponse: string = "";
+		while (!done) {
+			const { value, done: doneReading } = await reader.read();
+			done = doneReading;
+			const chunkValue = decoder.decode(value);
+			aiResponse += chunkValue;
+			setResponse((prev) => prev + chunkValue);
+		}
+	};
+
+	useEffect(() => {
+		if (position === "left") {
+			console.log({ message });
+			decodeMessage(message);
+		}
+	}, [message, position]);
+
+	console.log({ response });
+	const parsedMessage =
+		typeof message === "string"
+			? parser.parseFromString(message, "text/html").body.textContent
+			: "";
 
 	if (position === "left") {
 		return (

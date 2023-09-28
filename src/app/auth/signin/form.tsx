@@ -68,7 +68,6 @@ const SigninForm = () => {
 
 		setLoading(false);
 
-		console.log(res);
 		if (res?.error) {
 			setError("Invalid email or password");
 			return;
