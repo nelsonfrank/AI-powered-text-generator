@@ -13,7 +13,7 @@ const Chats = () => {
 					<ChatMessage
 						key={index + 1}
 						position={message.response ? "left" : "right"}
-						message={message.response ? message.response : message.sent}
+						message={message.response ? message.response : message.sent.text}
 					/>
 				))}
 			</div>
