@@ -44,16 +44,7 @@ export const sendMessageAsync = createAsyncThunk(
     "messages/sendMessageAsync",
     async (payload: Message, thunkAPI) => {
         try {
-            const response = await Axios.post("/api/prompt", payload)
-
-            if (!response.data) {
-                throw new Error(response.statusText);
-            }
-
-            const data = response.data;
-            if (!data) {
-                return;
-            }
+            Axios.post("/api/prompt", payload)
 
             thunkAPI.dispatch(getMessageResponseAsync({
                 senderId: payload.senderId,
@@ -62,7 +53,7 @@ export const sendMessageAsync = createAsyncThunk(
             }))
 
             return {
-                sent: data,
+                sent: { text: payload.content },
             };
         } catch (error) {
 
@@ -100,11 +91,7 @@ export const getMessageResponseAsync = createAsyncThunk(
 
 
 
-            // const dbResponse = await Axios.post("/api/prompt", {
-            //     receiverId: payload.senderId,
-            //     senderId: payload.receiverId,
-            //     content: data,
-            // })
+            // const dbResponse =
 
             // if (!dbResponse.data) {
             //     throw new Error(response.statusText);

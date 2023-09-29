@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import ChatAvatar from "./chat-avatar";
 import { getUserInitials } from "@/utils";
 import { useEffect, useState } from "react";
+import Axios from "axios";
 
 interface ChatMessageProps {
 	position: "left" | "right";
@@ -11,6 +12,9 @@ interface ChatMessageProps {
 const ChatMessage = ({ position, message }: ChatMessageProps) => {
 	const { data: session } = useSession();
 	const [response, setResponse] = useState("");
+	const [doneReading, setDoneReading] = useState(false);
+
+	const user = session?.user;
 
 	const parser = new DOMParser();
 
@@ -18,6 +22,17 @@ const ChatMessage = ({ position, message }: ChatMessageProps) => {
 		return response?.replace(/\n/g, "<br />");
 	}
 
+	const saveResponseToDb = async (payload: {
+		senderId: string;
+		receiverId: string;
+		content: string;
+	}) => {
+		await Axios.post("/api/prompt", {
+			receiverId: payload.senderId,
+			senderId: payload.receiverId,
+			content: payload.content,
+		});
+	};
 	const decodeMessage = async (
 		data: ReadableStream<Uint8Array> | null | string
 	) => {
@@ -26,24 +41,31 @@ const ChatMessage = ({ position, message }: ChatMessageProps) => {
 		const decoder = new TextDecoder();
 		let done = false;
 
-		let aiResponse: string = "";
 		while (!done) {
 			const { value, done: doneReading } = await reader.read();
 			done = doneReading;
+			setDoneReading(doneReading);
 			const chunkValue = decoder.decode(value);
-			aiResponse += chunkValue;
 			setResponse((prev) => prev + chunkValue);
 		}
 	};
 
 	useEffect(() => {
 		if (position === "left") {
-			console.log({ message });
 			decodeMessage(message);
 		}
 	}, [message, position]);
 
-	console.log({ response });
+	useEffect(() => {
+		if (doneReading && user) {
+			saveResponseToDb({
+				receiverId: user.id,
+				senderId: "64e0b4809458da2c53c88629",
+				content: response,
+			});
+		}
+	}, [doneReading, response, user]);
+
 	const parsedMessage =
 		typeof message === "string"
 			? parser.parseFromString(message, "text/html").body.textContent
