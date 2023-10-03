@@ -3,6 +3,7 @@ import { compare } from "bcryptjs";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from 'next-auth/providers/github';
 
 export const authOptions: NextAuthOptions = {
     pages: {
@@ -19,6 +20,10 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID ?? "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ""
+        }),
+        GithubProvider({
+            clientId: process.env.GITHUB_ID as string,
+            clientSecret: process.env.GITHUB_SECRET as string,
         }),
         CredentialsProvider({
             name: "Credentials",
@@ -75,3 +80,4 @@ export const authOptions: NextAuthOptions = {
         },
     },
 };
+
