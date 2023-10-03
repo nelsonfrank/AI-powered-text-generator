@@ -100,7 +100,10 @@ const SigninForm = () => {
 								<Icons.gitHub className='mr-2 h-4 w-4' />
 								Github
 							</Button>
-							<Button variant='outline'>
+							<Button
+								variant='outline'
+								onClick={() => signIn("google", { callbackUrl })}
+							>
 								<Icons.google className='mr-2 h-4 w-4' />
 								Google
 							</Button>
